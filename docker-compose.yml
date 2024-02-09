@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+#  go-app:
+#    build: .
+#    restart: unless-stopped
+#    ports: [ "3000:3000" ]
+#    volumes:
+#      - .:/go/src/app
+#    env_file:
+#      - .env
+#    depends_on: [mongo]
+
+  mongo:
+    ports:
+      - '27017:27017'
+    container_name: dkrcomp-mongo
+    restart: always
+    logging:
+      options:
+        max-size: 1g
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=bdung
+    image: mongo
