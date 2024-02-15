@@ -21,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := client.Database(db.DBNAME_HOTEL).Drop(context.TODO()); err != nil {
+	if err := client.Database(db.DBNAME_HOTEL).Drop(ctx); err != nil {
 		log.Fatal(err)
 	}
 
