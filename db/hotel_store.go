@@ -9,19 +9,17 @@ import (
 )
 
 type HotelStore interface {
-	InsertHotel(ctx context.Context, hotel types.Hotel) (*types.Hotel, error)
+	InsertHotel(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error)
 	Update(context.Context, bson.M, bson.M) error
 }
 
 type MongoHotelStore struct {
-	client *mongo.Client
-	coll   *mongo.Collection
+	coll *mongo.Collection
 }
 
 func NewMongoHotelStore(client *mongo.Client, dbname string) *MongoHotelStore {
 	return &MongoHotelStore{
-		client: client,
-		coll:   client.Database(dbname).Collection("hotels"),
+		coll: client.Database(dbname).Collection("hotels"),
 	}
 }
 

@@ -11,26 +11,17 @@ import (
 	"log"
 )
 
-func main() {
+var (
+	client     *mongo.Client
+	roomStore  db.RoomStore
+	hotelStore db.HotelStore
+	ctx        = context.Background()
+)
 
-	ctx := context.Background()
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := client.Database(db.DBNAME_HOTEL).Drop(ctx); err != nil {
-		log.Fatal(err)
-	}
-
-	hotelStore := db.NewMongoHotelStore(client, db.DBNAME_HOTEL)
-	roomStore := db.NewMongoRoomStore(client, db.DBNAME_HOTEL)
-
+func seedHotel(name, location string) error {
 	hotel := types.Hotel{
-		Name:     "B",
-		Location: "C",
+		Name:     name,
+		Location: location,
 		Rooms:    []primitive.ObjectID{},
 	}
 
@@ -66,4 +57,25 @@ func main() {
 		fmt.Println(insertedRoom)
 	}
 
+	return nil
+}
+
+func main() {
+	seedHotel("asd", "asd")
+}
+
+func init() {
+	var err error
+	client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Database(db.DBNAME_HOTEL).Drop(ctx); err != nil {
+		log.Fatal(err)
+	}
+
+	hotelStore = db.NewMongoHotelStore(client, db.DBNAME_HOTEL)
+	roomStore = db.NewMongoRoomStore(client, db.DBNAME_HOTEL)
 }

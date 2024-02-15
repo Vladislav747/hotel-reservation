@@ -10,6 +10,8 @@ import (
 	"hotel-reservation/bin/api"
 	"hotel-reservation/db"
 	"log"
+	"os"
+	"os/signal"
 )
 
 const dburi = "mongodb://mongoadmin:bdung@localhost:27017"
@@ -32,9 +34,18 @@ func main() {
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
 
 	app := fiber.New(config)
+
+	//Graceful shutdown
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		_ = <-c
+		fmt.Println("Gracefully shutting down...")
+		_ = app.Shutdown()
+	}()
+
 	apiv1 := app.Group("/api/v1")
 	fmt.Println("App Starting")
-	// /api/v1/user
 
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
