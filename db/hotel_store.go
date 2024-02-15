@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel-reservation/types"
@@ -9,6 +10,7 @@ import (
 
 type HotelStore interface {
 	InsertHotel(ctx context.Context, hotel types.Hotel) (*types.Hotel, error)
+	Update(context.Context, bson.M, bson.M) error
 }
 
 type MongoHotelStore struct {
@@ -21,6 +23,11 @@ func NewMongoHotelStore(client *mongo.Client, dbname string) *MongoHotelStore {
 		client: client,
 		coll:   client.Database(dbname).Collection("hotels"),
 	}
+}
+
+func (s *MongoHotelStore) Update(ctx context.Context, filter bson.M, update bson.M) error {
+	_, err := s.coll.UpdateOne(ctx, filter, update)
+	return err
 }
 
 func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error) {
