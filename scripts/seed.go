@@ -18,11 +18,12 @@ var (
 	ctx        = context.Background()
 )
 
-func seedHotel(name, location string) error {
+func seedHotel(name, location string, rating int) error {
 	hotel := types.Hotel{
 		Name:     name,
 		Location: location,
 		Rooms:    []primitive.ObjectID{},
+		Rating:   rating,
 	}
 
 	rooms := []types.Room{
@@ -61,7 +62,7 @@ func seedHotel(name, location string) error {
 }
 
 func main() {
-	seedHotel("asd", "asd")
+	seedHotel("asd", "asd", 3)
 }
 
 func init() {
@@ -76,6 +77,6 @@ func init() {
 		log.Fatal(err)
 	}
 
-	hotelStore = db.NewMongoHotelStore(client, db.DBNAME_HOTEL)
-	roomStore = db.NewMongoRoomStore(client, db.DBNAME_HOTEL)
+	hotelStore = db.NewMongoHotelStore(client)
+	roomStore = db.NewMongoRoomStore(client)
 }

@@ -31,9 +31,21 @@ func main() {
 	listenAddr := flag.String("listenAddr", ":3001", "The listen address of the API server")
 	flag.Parse()
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
+	var (
+		userStore   = db.NewMongoUserStore(client)
+		userHandler = api.NewUserHandler(userStore)
+		roomStore   = db.NewMongoRoomStore(client)
+		hotelStore  = db.NewMongoHotelStore(client)
+		store       = &db.Store{
+			User:  userStore,
+			Hotel: hotelStore,
+			Room:  roomStore,
+		}
+		hotelHandler = api.NewHotelHandler(store)
 
-	app := fiber.New(config)
+		app   = fiber.New(config)
+		apiv1 = app.Group("/api/v1")
+	)
 
 	//Graceful shutdown
 	c := make(chan os.Signal, 1)
@@ -44,13 +56,17 @@ func main() {
 		_ = app.Shutdown()
 	}()
 
-	apiv1 := app.Group("/api/v1")
 	fmt.Println("App Starting")
 
+	// user handlers
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
 	apiv1.Post("/user", userHandler.HandlePostUser)
 	apiv1.Get("/user", userHandler.HandleGetUsers)
 	apiv1.Get("/user/:id", userHandler.HandleGetUser)
+
+	//hotel handlers
+	apiv1.Get("/hotel", hotelHandler.HandleGetHotels)
+	apiv1.Get("/hotel/:id/rooms", hotelHandler.HandleGetRooms)
 	app.Listen(*listenAddr)
 }
