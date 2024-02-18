@@ -62,7 +62,7 @@ func main() {
 	fmt.Println("App Starting")
 
 	//auth
-	auth.Post("/auth/:id", authHandler.HandleAuthenticate)
+	auth.Post("/auth", authHandler.HandleAuthenticate)
 
 	// user handlers
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)

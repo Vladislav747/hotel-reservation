@@ -20,13 +20,16 @@ var (
 )
 
 func seedUser(fname, lname, email string) {
-	user := &types.User{
-		FirstName:         fname,
-		LastName:          lname,
-		Email:             email,
-		EncryptedPassword: "supersecurepass",
+	user, err := types.NewUserFromParams(types.CreateUserParams{
+		FirstName: fname,
+		LastName:  lname,
+		Email:     email,
+		Password:  "supersecurepass",
+	})
+	if err != nil {
+		log.Fatal(err)
 	}
-	_, err := userStore.CreateUser(context.TODO(), user)
+	_, err = userStore.CreateUser(context.TODO(), user)
 	if err != nil {
 		log.Fatal(err)
 	}
