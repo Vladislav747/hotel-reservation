@@ -15,8 +15,22 @@ var (
 	client     *mongo.Client
 	roomStore  db.RoomStore
 	hotelStore db.HotelStore
+	userStore  db.UserStore
 	ctx        = context.Background()
 )
+
+func seedUser(fname, lname, email string) {
+	user := &types.User{
+		FirstName:         fname,
+		LastName:          lname,
+		Email:             email,
+		EncryptedPassword: "supersecurepass",
+	}
+	_, err := userStore.CreateUser(context.TODO(), user)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func seedHotel(name, location string, rating int) error {
 	hotel := types.Hotel{
@@ -63,6 +77,7 @@ func seedHotel(name, location string, rating int) error {
 
 func main() {
 	seedHotel("asd", "asd", 3)
+	seedUser("asdasd", "asdad", "test@test.com")
 }
 
 func init() {
@@ -79,4 +94,5 @@ func init() {
 
 	hotelStore = db.NewMongoHotelStore(client)
 	roomStore = db.NewMongoRoomStore(client)
+	userStore = db.NewMongoUserStore(client)
 }
