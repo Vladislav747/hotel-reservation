@@ -22,7 +22,8 @@ func JWTAuthentication(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	expires := claims["expires"].(int64)
+	expiresFloat := claims["expires"].(float64)
+	expires := int64(expiresFloat)
 	// Check token expiration
 	if time.Now().Unix() > expires {
 		return fmt.Errorf("token expired")
@@ -30,7 +31,7 @@ func JWTAuthentication(c *fiber.Ctx) error {
 	fmt.Println(expires, "expires")
 	fmt.Println("token:", token)
 	fmt.Println("claims:", claims)
-	return nil
+	return c.Next()
 }
 
 func validateToken(tokenStr string) (jwt.MapClaims, error) {

@@ -75,7 +75,7 @@ func createTokenFromUser(user *types.User) string {
 	fmt.Println("---", secret)
 	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
-		fmt.Println("failed to sign token with secret")
+		fmt.Println("Failed to sign token with secret", err)
 	}
 	return tokenStr
 }
