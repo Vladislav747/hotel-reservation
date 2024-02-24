@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"hotel-reservation/bin/api"
-	"hotel-reservation/bin/api/middleware"
+	api2 "hotel-reservation/api"
+	"hotel-reservation/api/middleware"
 	"hotel-reservation/db"
 	"log"
 	"os"
@@ -34,7 +34,7 @@ func main() {
 
 	var (
 		userStore   = db.NewMongoUserStore(client)
-		userHandler = api.NewUserHandler(userStore)
+		userHandler = api2.NewUserHandler(userStore)
 		roomStore   = db.NewMongoRoomStore(client)
 		hotelStore  = db.NewMongoHotelStore(client)
 		store       = &db.Store{
@@ -42,8 +42,8 @@ func main() {
 			Hotel: hotelStore,
 			Room:  roomStore,
 		}
-		hotelHandler = api.NewHotelHandler(store)
-		authHandler  = api.NewAuthHandler(userStore)
+		hotelHandler = api2.NewHotelHandler(store)
+		authHandler  = api2.NewAuthHandler(userStore)
 
 		app   = fiber.New(config)
 		auth  = app.Group("/api/")
