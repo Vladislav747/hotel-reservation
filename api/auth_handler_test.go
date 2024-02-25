@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
@@ -30,10 +31,10 @@ func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
 	return user
 }
 
-func TestAuthenticate(t *testing.T) {
+func TestAuthenticateSuccess(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.teardown(t)
-	insertTestUser(t, tdb.UserStore)
+	insertedUser := insertTestUser(t, tdb.UserStore)
 	app := fiber.New()
 	authHandler := NewAuthHandler(tdb.UserStore)
 	app.Post("/auth", authHandler.HandleAuthenticate)
@@ -53,12 +54,22 @@ func TestAuthenticate(t *testing.T) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected status code 200, got %d", resp.StatusCode)
+		t.Fatalf("Expected status code 200, got %d", resp.StatusCode)
 	}
 
 	var authResp AuthResponse
 
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
-		t.Log(err)
+		t.Fatal(err)
+	}
+	if authResp.Token == "" {
+		t.Fatalf("expected the JWT token to be present in the auth response")
+	}
+
+	// Set the encrypted password to an empty string, because we don't have it in Response
+	insertedUser.EncryptedPassword = ""
+
+	if !reflect.DeepEqual(insertedUser, authResp.User) {
+		t.Fatalf("users not equal")
 	}
 }
