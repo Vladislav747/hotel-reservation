@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	api2 "hotel-reservation/api"
+	api "hotel-reservation/api"
 	"hotel-reservation/api/middleware"
 	"hotel-reservation/db"
 	"log"
@@ -33,21 +33,23 @@ func main() {
 	flag.Parse()
 
 	var (
-		userStore   = db.NewMongoUserStore(client)
-		userHandler = api2.NewUserHandler(userStore)
-		roomStore   = db.NewMongoRoomStore(client)
-		hotelStore  = db.NewMongoHotelStore(client)
-		store       = &db.Store{
+		userStore = db.NewMongoUserStore(client)
+
+		roomStore  = db.NewMongoRoomStore(client)
+		hotelStore = db.NewMongoHotelStore(client)
+		store      = &db.Store{
 			User:  userStore,
 			Hotel: hotelStore,
 			Room:  roomStore,
 		}
-		hotelHandler = api2.NewHotelHandler(store)
-		authHandler  = api2.NewAuthHandler(userStore)
+		userHandler  = api.NewUserHandler(userStore)
+		hotelHandler = api.NewHotelHandler(store)
+		authHandler  = api.NewAuthHandler(userStore)
+		roomHandler  = api.NewRoomHandler(store)
 
 		app   = fiber.New(config)
 		auth  = app.Group("/api/")
-		apiv1 = app.Group("/api/v1", middleware.JWTAuthentication)
+		apiv1 = app.Group("/api/v1", middleware.JWTAuthentication(userStore))
 	)
 
 	//Graceful shutdown
@@ -75,5 +77,8 @@ func main() {
 	apiv1.Get("/hotel", hotelHandler.HandleGetHotels)
 	apiv1.Get("/hotel/:id", hotelHandler.HandleGetHotel)
 	apiv1.Get("/hotel/:id/rooms", hotelHandler.HandleGetRooms)
+
+	//room handlers
+	apiv1.Get("/room/:id/book", roomHandler.HandleBookRoom)
 	app.Listen(*listenAddr)
 }
