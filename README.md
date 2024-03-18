@@ -4,3 +4,7 @@
 - искать по индексу start_date - в качестве ключе start_date
 
 export JWT_SECRET=sdfsssd
+
+
+- golangci-lint run -v
+- golangci-lint run -fix

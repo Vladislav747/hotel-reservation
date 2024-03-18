@@ -16,6 +16,15 @@ type BookRoomParams struct {
 	NumPersons int       `json:"numPersons"`
 }
 
+func (p BookRoomParams) validate() error {
+	now := time.Now()
+	if now.After(p.FromDate) || now.After(p.TillDate) {
+		return fmt.Errorf("cannot book a room in the past")
+	}
+
+	return nil
+}
+
 type RoomHandler struct {
 	store *db.Store
 }
@@ -29,6 +38,9 @@ func NewRoomHandler(store *db.Store) *RoomHandler {
 func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	var params BookRoomParams
 	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+	if err := params.validate(); err != nil {
 		return err
 	}
 	roomID, err := primitive.ObjectIDFromHex(c.Params("id"))
@@ -49,5 +61,15 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 		NumPersons: params.NumPersons,
 	}
 	fmt.Println(booking, "booking")
-	return nil
+	fmt.Printf("%+v\n", booking)
+
+	inserted, err := h.store.Booking.InsertBooking(c.Context(), &booking)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(inserted, "inserted")
+
+	return c.JSON(inserted)
 }

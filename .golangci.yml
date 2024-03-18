@@ -1,0 +1,15 @@
+run:
+  timeout: 10m
+
+linters-settings:
+  disable-all: true
+  enable:
+    - gofumpt
+    - unused
+    - govet
+    - errcheck
+  golint:
+    min-confidence: 0.8 # Управляет порогом уверенности для предупреждений (меньше значений - больше предупреждений)
+linters:
+  enable:
+    - golint

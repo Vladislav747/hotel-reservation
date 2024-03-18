@@ -35,12 +35,14 @@ func main() {
 	var (
 		userStore = db.NewMongoUserStore(client)
 
-		roomStore  = db.NewMongoRoomStore(client)
-		hotelStore = db.NewMongoHotelStore(client)
-		store      = &db.Store{
-			User:  userStore,
-			Hotel: hotelStore,
-			Room:  roomStore,
+		roomStore    = db.NewMongoRoomStore(client)
+		hotelStore   = db.NewMongoHotelStore(client)
+		bookingStore = db.NewMongoBookingStore(client)
+		store        = &db.Store{
+			User:    userStore,
+			Hotel:   hotelStore,
+			Room:    roomStore,
+			Booking: bookingStore,
 		}
 		userHandler  = api.NewUserHandler(userStore)
 		hotelHandler = api.NewHotelHandler(store)
