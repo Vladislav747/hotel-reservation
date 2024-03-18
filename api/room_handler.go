@@ -18,6 +18,7 @@ type BookRoomParams struct {
 
 func (p BookRoomParams) validate() error {
 	now := time.Now()
+
 	if now.After(p.FromDate) || now.After(p.TillDate) {
 		return fmt.Errorf("cannot book a room in the past")
 	}
