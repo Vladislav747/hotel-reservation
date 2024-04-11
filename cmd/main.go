@@ -88,10 +88,10 @@ func main() {
 	apiv1.Get("/room/:id/book", roomHandler.HandleBookRoom)
 
 	//booking handlers
-	admin.Get("/booking", bookingHandler.HandleGetBookings)
-	admin.Get("/booking/:id", bookingHandler.HandleGetBooking)
+	apiv1.Get("/booking/:id", bookingHandler.HandleGetBooking)
 
 	//admin handlers
+	admin.Get("/booking", bookingHandler.HandleGetBookings)
 
 	app.Listen(*listenAddr)
 }
