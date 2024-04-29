@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"regexp"
 )
 
@@ -43,15 +44,19 @@ func (params CreateUserParams) Validate() map[string]string {
 	errors := map[string]string{}
 
 	if len(params.FirstName) < minFirstNameLen {
+		log.Println("error FirstName too short")
 		errors["firstName"] = fmt.Sprintf("first name must be at least %d characters long", minFirstNameLen)
 	}
 	if len(params.LastName) < minLastNameLen {
+		log.Println("error LastName too short")
 		errors["lastName"] = fmt.Sprintf("last name must be at least %d characters long", minLastNameLen)
 	}
 	if len(params.Password) < minPasswordLen {
+		log.Println("error Password too short")
 		errors["password"] = fmt.Sprintf("password must be at least %d characters long", minPasswordLen)
 	}
 	if !isEmailValid(params.Email) {
+		log.Println("error email is invalid")
 		errors["email"] = fmt.Sprintf("email %s is invalid", params.Email)
 	}
 	return errors

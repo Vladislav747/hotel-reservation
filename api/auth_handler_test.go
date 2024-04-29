@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"hotel-reservation/db"
+	"hotel-reservation/db/fixtures"
 	"hotel-reservation/types"
 	"log"
 	"net/http"
@@ -34,14 +35,14 @@ func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
 func TestAuthenticateSuccess(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.teardown(t)
-	insertedUser := insertTestUser(t, tdb.UserStore)
+	insertedUser := fixtures.AddUser(tdb.Store, "as", "asd", false)
 	app := fiber.New()
-	authHandler := NewAuthHandler(tdb.UserStore)
+	authHandler := NewAuthHandler(tdb.User)
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	params := AuthParams{
 		Email:    "james@foo.com",
-		Password: "supersecurepass",
+		Password: "james_foo",
 	}
 
 	b, _ := json.Marshal(params)
@@ -78,7 +79,7 @@ func TestAuthenticateWithWrongPasswordFailure(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.teardown(t)
 	app := fiber.New()
-	authHandler := NewAuthHandler(tdb.UserStore)
+	authHandler := NewAuthHandler(tdb.User)
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	params := AuthParams{

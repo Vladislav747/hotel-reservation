@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel-reservation/db"
 	"hotel-reservation/types"
+	"log"
 )
 
 type UserHandler struct {
@@ -52,17 +53,21 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
+	fmt.Println("HandlePostUser")
 	var params types.CreateUserParams
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
-	if errors := params.Validate(); errors != nil {
+
+	if errors := params.Validate(); len(errors) > 0 {
+		log.Println("Error Validating User")
 		return c.JSON(errors)
 	}
 	user, err := types.NewUserFromParams(params)
 	if err != nil {
 		return err
 	}
+
 	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
 	if err != nil {
 		return err
