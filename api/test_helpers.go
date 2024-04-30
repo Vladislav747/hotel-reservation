@@ -15,7 +15,7 @@ const (
 
 type testdb struct {
 	client *mongo.Client
-	db.Store
+	*db.Store
 }
 
 func (tdb *testdb) teardown(t *testing.T) {
@@ -32,7 +32,7 @@ func setup(t *testing.T) *testdb {
 	hotelStore := db.NewMongoHotelStore(client)
 	return &testdb{
 		client: client,
-		Store: db.Store{
+		Store: &db.Store{
 			Hotel:   hotelStore,
 			User:    db.NewMongoUserStore(client),
 			Room:    db.NewMongoRoomStore(client),

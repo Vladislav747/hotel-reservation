@@ -94,5 +94,8 @@ func main() {
 	//admin handlers
 	admin.Get("/booking", bookingHandler.HandleGetBookings)
 
-	app.Listen(*listenAddr)
+	err = app.Listen(*listenAddr)
+	if err != nil {
+		fmt.Printf("Listen Connection error: %s\n", err)
+	}
 }

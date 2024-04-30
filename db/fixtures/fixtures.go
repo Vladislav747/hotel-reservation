@@ -4,14 +4,13 @@ import (
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"hotel-reservation/api"
 	"hotel-reservation/db"
 	"hotel-reservation/types"
 	"log"
 	"time"
 )
 
-func AddBooking(store db.Store, userID, roomID primitive.ObjectID, from, tillDate time.Time) *types.Booking {
+func AddBooking(store *db.Store, userID, roomID primitive.ObjectID, from, tillDate time.Time) *types.Booking {
 	booking := &types.Booking{
 		UserID:   userID,
 		RoomID:   roomID,
@@ -27,7 +26,7 @@ func AddBooking(store db.Store, userID, roomID primitive.ObjectID, from, tillDat
 
 }
 
-func AddRoom(store db.Store, size string, ss bool, price float64, hotelID primitive.ObjectID) *types.Room {
+func AddRoom(store *db.Store, size string, ss bool, price float64, hotelID primitive.ObjectID) *types.Room {
 	room := &types.Room{
 		Size:    size,
 		Seaside: ss,
@@ -42,7 +41,7 @@ func AddRoom(store db.Store, size string, ss bool, price float64, hotelID primit
 	return insertedRoom
 }
 
-func AddHotel(store db.Store, name string, loc string, rating int, rooms []primitive.ObjectID) *types.Hotel {
+func AddHotel(store *db.Store, name string, loc string, rating int, rooms []primitive.ObjectID) *types.Hotel {
 	var roomsIDS = rooms
 	if rooms == nil {
 		roomsIDS = []primitive.ObjectID{}
@@ -61,7 +60,7 @@ func AddHotel(store db.Store, name string, loc string, rating int, rooms []primi
 	return insertedHotel
 }
 
-func AddUser(store db.Store, fn, ln string, admin bool) *types.User {
+func AddUser(store *db.Store, fn, ln string, admin bool) *types.User {
 	user, err := types.NewUserFromParams(types.CreateUserParams{
 		Email:     fmt.Sprintf("%s@%s.com", fn, ln),
 		FirstName: fn,
@@ -76,7 +75,7 @@ func AddUser(store db.Store, fn, ln string, admin bool) *types.User {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("%s -> %s - AddedUser\n", user.Email, api.CreateTokenFromUser(user))
+	log.Printf("%s -> %s - AddedUser\n", user.Email, user)
 	return insertedUser
 
 }

@@ -31,7 +31,7 @@ func main() {
 
 	hotelStore = db.NewMongoHotelStore(client)
 
-	store := db.Store{
+	store := &db.Store{
 		User:    db.NewMongoUserStore(client),
 		Booking: db.NewMongoBookingStore(client),
 		Room:    db.NewMongoRoomStore(client),
