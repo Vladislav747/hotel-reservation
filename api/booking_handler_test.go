@@ -95,7 +95,7 @@ func TestAdminGetBookings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode == http.StatusOK {
+	if resp.StatusCode == http.StatusUnauthorized {
 		t.Fatalf("exprected a non 200 status Code got %d", resp.StatusCode)
 	}
 

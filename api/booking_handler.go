@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"hotel-reservation/db"
+	"hotel-reservation/errors"
 	"log"
-	"net/http"
 )
 
 type BookingHandler struct {
@@ -23,17 +23,14 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
-		return err
+		return errors.ErrNotResourceNotFound("booking")
 	}
 	user, err := getAuthUser(c)
 	if err != nil {
-		return err
+		return errors.ErrUnauthorized()
 	}
 	if booking.UserID != user.ID {
-		return c.Status(http.StatusUnauthorized).JSON(genericResp{
-			Type: "error",
-			Msg:  "not authorized",
-		})
+		return errors.ErrUnauthorized()
 	}
 	if err := h.store.Booking.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true}); err != nil {
 		return err
@@ -44,7 +41,7 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	bookings, err := h.store.Booking.GetBookings(c.Context(), bson.M{})
 	if err != nil {
-		return err
+		return errors.ErrNotResourceNotFound("bookings")
 	}
 	return c.JSON(bookings)
 }
@@ -55,18 +52,15 @@ func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
-		return err
+		return errors.ErrNotResourceNotFound("booking")
 	}
 	user, err := getAuthUser(c)
 	if err != nil {
-		return err
+		return errors.ErrUnauthorized()
 	}
 	if booking.ID != user.ID {
 		log.Println("HandleGetBooking Not Authorized")
-		return c.Status(http.StatusUnauthorized).JSON(genericResp{
-			Type: "error",
-			Msg:  "not authorized",
-		})
+		return errors.ErrUnauthorized()
 	}
 
 	return c.JSON(booking)

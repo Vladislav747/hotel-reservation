@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel-reservation/db"
+	errors2 "hotel-reservation/errors"
 	"hotel-reservation/types"
 	"log"
 )
@@ -31,11 +32,11 @@ func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	)
 	oid, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return err
+		return errors2.ErrInvalidID()
 	}
 	//Разпарсим параметры
 	if err := c.BodyParser(&params); err != nil {
-		return err
+		return errors2.ErrBadRequest()
 	}
 	filter := bson.M{"_id": oid}
 	if err := h.userStore.UpdateUser(c.Context(), filter, params); err != nil {
@@ -78,9 +79,9 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	users, err := h.userStore.GetUsers(c.Context())
 	if err != nil {
-		return err
+		return errors2.ErrNotResourceNotFound("users")
 	}
-	fmt.Println(users)
+	log.Println(users, "users")
 	return c.JSON(users)
 }
 

@@ -75,7 +75,7 @@ func AddUser(store *db.Store, fn, ln string, admin bool) *types.User {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("%s -> %s - AddedUser\n", user.Email, user)
+	log.Printf("%s -> %s - AddedUser\n", user.Email, user.FirstName)
 	return insertedUser
 
 }

@@ -8,3 +8,6 @@ export JWT_SECRET=sdfsssd
 
 - golangci-lint run -v
 - golangci-lint run -fix
+
+
+Пароль теперь идет по типу fn_ln

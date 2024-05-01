@@ -10,6 +10,7 @@ import (
 	api "hotel-reservation/api"
 	"hotel-reservation/api/middleware"
 	"hotel-reservation/db"
+	"hotel-reservation/errors"
 	"log"
 	"os"
 	"os/signal"
@@ -18,9 +19,7 @@ import (
 const dburi = "mongodb://mongoadmin:bdung@localhost:27017"
 
 var config = fiber.Config{
-	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-		return ctx.JSON(map[string]string{"error": err.Error()})
-	},
+	ErrorHandler: errors.ErrorHandler,
 }
 
 func main() {

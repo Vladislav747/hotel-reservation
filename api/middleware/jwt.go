@@ -5,6 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"hotel-reservation/db"
+	"hotel-reservation/errors"
+	"net/http"
 	"os"
 	"time"
 )
@@ -15,7 +17,7 @@ func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 
 		token, ok := c.GetReqHeaders()["X-Api-Token"]
 		if !ok {
-			return fmt.Errorf("unauthorized")
+			return errors.ErrUnauthorized()
 		}
 
 		fmt.Println(token[0], "token arr")
@@ -28,7 +30,7 @@ func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 		expires := int64(expiresFloat)
 		// Check token expiration
 		if time.Now().Unix() > expires {
-			return fmt.Errorf("token expired")
+			return errors.NewError(http.StatusUnauthorized, "token expired")
 		}
 		fmt.Println(expires, "expires")
 		fmt.Println("token:", token)
@@ -37,7 +39,7 @@ func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 		userID := claims["id"].(string)
 		user, err := userStore.GetUserByID(c.Context(), userID)
 		if err != nil {
-			return fmt.Errorf("unathorized")
+			return errors.ErrUnauthorized()
 		}
 		// Set the current authenticated user to the context
 		c.Context().SetUserValue("user", user)
@@ -52,7 +54,7 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			fmt.Println("Invalid signing method", token.Header["alg"])
-			return nil, fmt.Errorf("unauthorized")
+			return nil, errors.ErrUnauthorized()
 		}
 
 		secret := os.Getenv("JWT_SECRET")
@@ -60,12 +62,12 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	})
 	if err != nil {
 		fmt.Println("failed to parse JWT token:", err)
-		return nil, fmt.Errorf("unauthorized")
+		return nil, errors.ErrUnauthorized()
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, fmt.Errorf("unauthorized")
+		return nil, errors.ErrUnauthorized()
 	}
 	return claims, nil
 }
