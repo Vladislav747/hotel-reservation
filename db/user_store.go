@@ -16,6 +16,8 @@ type Droppper interface {
 	Drop(ctx context.Context) error
 }
 
+type Map map[string]any
+
 type UserStore interface {
 	Droppper
 
@@ -24,7 +26,7 @@ type UserStore interface {
 	GetUsers(context.Context) ([]*types.User, error)
 	CreateUser(context.Context, *types.User) (*types.User, error)
 	DeleteUser(context.Context, string) error
-	UpdateUser(context.Context, bson.M, types.UpdateUserParams) error
+	UpdateUser(context.Context, Map, types.UpdateUserParams) error
 	Drop(context.Context) error
 }
 
@@ -44,9 +46,14 @@ func (s *MongoUserStore) Drop(ctx context.Context) error {
 	return s.coll.Drop(ctx)
 }
 
-func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, params types.UpdateUserParams) error {
-	update := bson.M{"$set": params}
-	_, err := s.coll.UpdateOne(ctx, filter, update)
+func (s *MongoUserStore) UpdateUser(ctx context.Context, filter Map, params types.UpdateUserParams) error {
+	oid, err := primitive.ObjectIDFromHex(filter["id"].(string))
+	if err != nil {
+		return err
+	}
+	filter["id"] = oid
+	update := bson.M{"$set": params.ToBSON()}
+	_, err = s.coll.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}

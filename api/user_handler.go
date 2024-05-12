@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel-reservation/db"
@@ -38,7 +37,7 @@ func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&params); err != nil {
 		return errors2.ErrBadRequest()
 	}
-	filter := bson.M{"_id": oid}
+	filter := db.Map{"_id": oid}
 	if err := h.userStore.UpdateUser(c.Context(), filter, params); err != nil {
 		return err
 	}
