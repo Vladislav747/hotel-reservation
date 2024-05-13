@@ -8,6 +8,11 @@ const (
 	DBURI        = "mongodb://mongoadmin:bdung@localhost:27017"
 )
 
+type Pagination struct {
+	Limit int64
+	Page  int64
+}
+
 func ToObjectID(id string) primitive.ObjectID {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

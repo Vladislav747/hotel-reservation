@@ -8,6 +8,7 @@ import (
 	"hotel-reservation/db"
 	"hotel-reservation/db/fixtures"
 	"log"
+	"math/rand"
 	"time"
 )
 
@@ -48,4 +49,10 @@ func main() {
 	fixtures.AddUser(store, "admin", "admin", true)
 	fixtures.AddRoom(store, "small", true, 89.99, hotel.ID)
 	fixtures.AddRoom(store, "medium", true, 89.99, hotel.ID)
+
+	for i := 0; i < 100; i++ {
+		name := fmt.Sprintf("random hotel name %d", i)
+		location := fmt.Sprintf("location %d", i)
+		fixtures.AddHotel(store, name, location, rand.Intn(5)+1, nil)
+	}
 }
