@@ -3,30 +3,39 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel-reservation/db"
 	"hotel-reservation/db/fixtures"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 )
 
 var (
 	client     *mongo.Client
 	hotelStore db.HotelStore
-	ctx        = context.Background()
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	var (
+		ctx           = context.Background()
+		mongoEndpoint = os.Getenv("MONGO_DB_URL")
+		dbName        = os.Getenv("MONGO_DB_NAME")
+	)
 	var err error
-	client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	client, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoEndpoint))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := client.Database(db.DBNAME_HOTEL).Drop(ctx); err != nil {
+	if err := client.Database(dbName).Drop(ctx); err != nil {
 		log.Fatal(err)
 	}
 

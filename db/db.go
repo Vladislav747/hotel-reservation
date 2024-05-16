@@ -2,12 +2,6 @@ package db
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-const (
-	DBNAME_HOTEL = "hotel-reservation"
-	TestDBNAME   = "hotel-reservation-test"
-	DBURI        = "mongodb://mongoadmin:bdung@localhost:27017"
-)
-
 type Pagination struct {
 	Limit int64
 	Page  int64
